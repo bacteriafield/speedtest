@@ -1,6 +1,0 @@
-api_key: my-api-key
-api_secret: my-api-secret
-extract_url: http://localhost:5173/
-storage_directory: .
-cache_filename: .extracts-cache.json
-cache_duration_minutes: -1
