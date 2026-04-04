@@ -2,6 +2,12 @@
 name = "speedtest"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
+description = "Fast terminal speedtest"
+repository = "https://github.com/bacteriafield/speedtest"
+readme = "README.md"
+keywords = ["speedtest", "network", "cli"]
+categories = ["command-line-utilities"]
 
 [[bin]]
 name = "speedtest"
@@ -18,3 +24,19 @@ chrono = { version = "0.4", features = ["serde"] }
 futures = "0.3"
 bytes = "1"
 thiserror = "1"
+
+[package.metadata.deb]
+maintainer = "bacteriafield"
+copyright = "2026"
+license-file = ["LICENSE", "4"]
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+  ["target/release/speedtest", "usr/bin/", "755"]
+]
+
+[package.metadata.generate-rpm]
+assets = [
+  { source = "target/release/speedtest", dest = "/usr/bin/speedtest", mode = "755" }
+]
