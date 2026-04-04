@@ -1,0 +1,39 @@
+name: Build Linux Packages
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  packages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install package builders
+        run: |
+          cargo install cargo-deb
+          cargo install cargo-generate-rpm
+
+      - name: Build binary
+        run: cargo build --release
+
+      - name: Build .deb
+        run: cargo deb
+
+      - name: Build .rpm
+        run: cargo generate-rpm
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-packages
+          path: |
+            target/debian/*.deb
+            target/generate-rpm/*.rpm
