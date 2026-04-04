@@ -21,10 +21,7 @@ pub struct ServerJson<'a> {
 impl<'a> From<&'a TestResult> for JsonOutput<'a> {
     fn from(r: &'a TestResult) -> Self {
         Self {
-            server: ServerJson {
-                id: &r.server_id,
-                name: &r.server_name,
-            },
+            server: ServerJson { id: &r.server_id, name: &r.server_name },
             ping_ms: r.ping.avg_ms,
             jitter_ms: r.ping.jitter_ms,
             download_mbps: r.download_mbps,
@@ -40,11 +37,7 @@ pub fn to_json(result: &TestResult) -> String {
 }
 
 pub fn export(result: &TestResult, path: &str) -> std::io::Result<()> {
-    let ext = Path::new(path)
-        .extension()
-        .and_then(|e| e.to_str())
-        .unwrap_or("json")
-        .to_lowercase();
+    let ext = Path::new(path).extension().and_then(|e| e.to_str()).unwrap_or("json").to_lowercase();
 
     let content = match ext.as_str() {
         "csv" => to_csv(result),
@@ -74,10 +67,7 @@ fn to_csv(r: &TestResult) -> String {
 pub fn print_summary(result: &TestResult) {
     println!();
     println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    println!(
-        "  RESULTS  │  {}  ({})",
-        result.server_name, result.timestamp
-    );
+    println!("  RESULTS  │  {}  ({})", result.server_name, result.timestamp);
     println!("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     println!(
         "  Ping        {:>8.1} ms     jitter  {:.1} ms",

@@ -14,13 +14,9 @@ pub fn render_phase_header(label: &str, prog: &Option<SpeedProgress>, active: bo
             p.elapsed_secs,
         ),
         None => {
-            let status = if active {
-                "◷ measuring…"
-            } else {
-                "pending"
-            };
+            let status = if active { "◷ measuring…" } else { "pending" };
             format!("  {}  {}", label.bold(), status)
-        }
+        },
     }
 }
 
@@ -37,12 +33,12 @@ pub fn render_phase_body(lines: &mut Vec<String>, prog: &Option<SpeedProgress>) 
             for cl in &chart_lines {
                 lines.push(format!("  {}", cl));
             }
-        }
+        },
         _ => {
             // Empty placeholder so the frame height stays constant.
             for _ in 0..(CHART_HEIGHT + 3) {
                 lines.push(String::new());
             }
-        }
+        },
     }
 }

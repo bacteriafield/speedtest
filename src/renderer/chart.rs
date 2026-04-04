@@ -5,11 +5,8 @@ pub fn sparkline(data: &[f64], width: usize) -> String {
         return " ".repeat(width);
     }
 
-    let window: Vec<f64> = if data.len() > width {
-        data[data.len() - width..].to_vec()
-    } else {
-        data.to_vec()
-    };
+    let window: Vec<f64> =
+        if data.len() > width { data[data.len() - width..].to_vec() } else { data.to_vec() };
 
     let max = window.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
     let min = window.iter().cloned().fold(f64::INFINITY, f64::min);
@@ -45,11 +42,7 @@ pub fn line_chart(data: &[f64], width: usize, height: usize) -> Vec<String> {
     // Use only the last `data_width` samples.
     let window: Vec<f64> = {
         let n = data.len();
-        if n > data_width {
-            data[n - data_width..].to_vec()
-        } else {
-            data.to_vec()
-        }
+        if n > data_width { data[n - data_width..].to_vec() } else { data.to_vec() }
     };
 
     let max = window.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
@@ -71,11 +64,7 @@ pub fn line_chart(data: &[f64], width: usize, height: usize) -> Vec<String> {
         if curr == prev {
             grid[curr as usize][x] = '─';
         } else {
-            let (upper, lower) = if curr < prev {
-                (curr, prev)
-            } else {
-                (prev, curr)
-            };
+            let (upper, lower) = if curr < prev { (curr, prev) } else { (prev, curr) };
 
             // Top character
             grid[upper as usize][x] = if curr < prev { '╭' } else { '╮' };

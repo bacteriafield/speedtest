@@ -1,5 +1,6 @@
 use crate::metrics::SpeedProgress;
 use crate::server::Server;
+use bytes::Bytes;
 use futures::StreamExt;
 use reqwest::Client;
 use std::sync::{
@@ -9,9 +10,9 @@ use std::sync::{
 use std::time::{Duration, Instant};
 use tokio::sync::watch;
 
-// 200 MB per stream request — large enough that we never hit the end
-// before the duration timer fires.
-const CHUNK_BYTES: u64 = 200_000_000;
+// 25 MB per stream request — Cloudflare blocks requests over ~50-100MB with 403 Forbidden.
+// We must use 25MB and loop politely.
+const CHUNK_BYTES: u64 = 25_000_000;
 // How often we sample throughput (500 ms → ~20 samples for a 10 s test)
 const SAMPLE_INTERVAL_MS: u64 = 500;
 
@@ -25,26 +26,40 @@ pub async fn measure_download(
     let total_bytes = Arc::new(AtomicU64::new(0));
     let done = Arc::new(AtomicBool::new(false));
 
+    let actual_streams =
+        if server.download_url.contains("cloudflare") { streams.min(4) } else { streams };
+
     // Spawn N parallel download tasks.
     let mut handles = Vec::with_capacity(streams);
-    for _ in 0..streams {
+    for i in 0..actual_streams {
         let client = client.clone();
-        let url = format!("{}?bytes={}", server.download_url, CHUNK_BYTES);
+        let url = if server.download_url.contains("__down") {
+            format!("{}?bytes={}", server.download_url, CHUNK_BYTES)
+        } else {
+            server.download_url.to_string() // Bunny
+        };
         let counter = Arc::clone(&total_bytes);
         let stop_flag = Arc::clone(&done);
 
         handles.push(tokio::spawn(async move {
+            tokio::time::sleep(Duration::from_millis(i as u64 * 200)).await;
             loop {
                 if stop_flag.load(Ordering::Relaxed) {
                     break;
                 }
 
                 let resp = match client.get(&url).send().await {
-                    Ok(r) => r,
+                    Ok(r) => {
+                        if !r.status().is_success() {
+                            tokio::time::sleep(Duration::from_millis(500)).await;
+                            continue;
+                        }
+                        r
+                    },
                     Err(_) => {
                         tokio::time::sleep(Duration::from_millis(100)).await;
                         continue;
-                    }
+                    },
                 };
 
                 let mut stream = resp.bytes_stream();
@@ -104,15 +119,8 @@ pub async fn measure_download(
     }
 
     // Return trimmed mean (drop first and last samples — they're often noisy).
-    let trimmed = if history.len() > 4 {
-        &history[1..history.len() - 1]
-    } else {
-        history.as_slice()
-    };
+    let trimmed =
+        if history.len() > 4 { &history[1..history.len() - 1] } else { history.as_slice() };
 
-    if trimmed.is_empty() {
-        0.0
-    } else {
-        trimmed.iter().sum::<f64>() / trimmed.len() as f64
-    }
+    if trimmed.is_empty() { 0.0 } else { trimmed.iter().sum::<f64>() / trimmed.len() as f64 }
 }

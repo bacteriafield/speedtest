@@ -8,11 +8,7 @@ pub async fn measure_ping(client: &Client, server: &Server, count: u32) -> PingR
 
     for _ in 0..count {
         let start = Instant::now();
-        let _ = client
-            .head(server.ping_url)
-            .timeout(Duration::from_secs(5))
-            .send()
-            .await;
+        let _ = client.head(server.ping_url).timeout(Duration::from_secs(5)).send().await;
         let ms = start.elapsed().as_secs_f64() * 1000.0;
         samples.push(ms);
 
@@ -35,10 +31,5 @@ pub async fn measure_ping(client: &Client, server: &Server, count: u32) -> PingR
         0.0
     };
 
-    PingResult {
-        avg_ms: avg,
-        min_ms: min,
-        max_ms: max,
-        jitter_ms: jitter,
-    }
+    PingResult { avg_ms: avg, min_ms: min, max_ms: max, jitter_ms: jitter }
 }

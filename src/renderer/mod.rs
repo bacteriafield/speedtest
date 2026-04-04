@@ -3,7 +3,6 @@
 pub mod chart;
 
 use crate::helpers::render::{render_phase_body, render_phase_header};
-use crate::metrics::SpeedProgress;
 use crate::speedtest::{LiveState, Phase};
 use crossterm::{
     ExecutableCommand, QueueableCommand, cursor,
@@ -26,10 +25,7 @@ pub struct LiveRenderer {
 
 impl LiveRenderer {
     pub fn new(server_label: String) -> Self {
-        Self {
-            server_label,
-            lines_printed: 0,
-        }
+        Self { server_label, lines_printed: 0 }
     }
 
     /// Main render loop — redraws at ~10 fps until Phase::Done.
@@ -62,15 +58,12 @@ impl LiveRenderer {
 
         // Move back up to overwrite previous frame (skip on first paint).
         if self.lines_printed > 0 {
-            let _ = out.queue(cursor::MoveUp(self.lines_printed));
+            let _ = out.queue(cursor::MoveToPreviousLine(self.lines_printed));
         }
 
         let mut lines: Vec<String> = Vec::new();
 
-        lines.push(format!(
-            "{}",
-            format!(" ◆ speedtest  │  {}", self.server_label).bold()
-        ));
+        lines.push(format!("{}", format!(" ◆ speedtest  │  {}", self.server_label).bold()));
         lines.push(format!("{}", "─".repeat(64)));
 
         match &state.ping {
@@ -79,40 +72,28 @@ impl LiveRenderer {
                     "  PING     {:>7.1} ms   min {:>5.1}  max {:>5.1}  jitter {:>4.1} ms",
                     p.avg_ms, p.min_ms, p.max_ms, p.jitter_ms
                 ));
-            }
+            },
             None => {
-                let label = if state.phase == Phase::Ping {
-                    "measuring…"
-                } else {
-                    "pending"
-                };
+                let label = if state.phase == Phase::Ping { "measuring…" } else { "pending" };
                 lines.push(format!("  PING     {}", label));
-            }
+            },
         }
 
-        lines.push(format!("{}", "─".repeat(64)));
-
+        lines.push("─".repeat(64));
         lines.push(render_phase_header(
             "DOWNLOAD",
             &state.download,
             state.phase == Phase::Download,
         ));
         render_phase_body(&mut lines, &state.download);
-
-        lines.push(format!("{}", "─".repeat(64)));
-
-        lines.push(render_phase_header(
-            "UPLOAD  ",
-            &state.upload,
-            state.phase == Phase::Upload,
-        ));
+        lines.push("─".repeat(64));
+        lines.push(render_phase_header("UPLOAD  ", &state.upload, state.phase == Phase::Upload));
         render_phase_body(&mut lines, &state.upload);
-
-        lines.push(format!("{}", "─".repeat(64)));
+        lines.push("─".repeat(64));
 
         for line in &lines {
             let _ = out.queue(terminal::Clear(terminal::ClearType::CurrentLine));
-            print!("{}\r\n", line);
+            let _ = out.queue(crossterm::style::Print(format!("{}\r\n", line)));
         }
 
         self.lines_printed = lines.len() as u16;

@@ -53,10 +53,10 @@ pub async fn measure_upload(
                 match result {
                     Ok(_) => {
                         counter.fetch_add(len, Ordering::Relaxed);
-                    }
+                    },
                     Err(_) => {
                         tokio::time::sleep(Duration::from_millis(100)).await;
-                    }
+                    },
                 }
             }
         }));
@@ -104,15 +104,8 @@ pub async fn measure_upload(
         let _ = h.await;
     }
 
-    let trimmed = if history.len() > 4 {
-        &history[1..history.len() - 1]
-    } else {
-        history.as_slice()
-    };
+    let trimmed =
+        if history.len() > 4 { &history[1..history.len() - 1] } else { history.as_slice() };
 
-    if trimmed.is_empty() {
-        0.0
-    } else {
-        trimmed.iter().sum::<f64>() / trimmed.len() as f64
-    }
+    if trimmed.is_empty() { 0.0 } else { trimmed.iter().sum::<f64>() / trimmed.len() as f64 }
 }

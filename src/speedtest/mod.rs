@@ -35,107 +35,88 @@ pub async fn run(cli: &Cli, server: &Server) -> TestResult {
 
     let (state_tx, state_rx) = watch::channel(LiveState::default());
 
-    if !cli.json {
+    let renderer_handle = if !cli.json {
         let rx = state_rx.clone();
         let server_label = format!("{} ({})", server.name, server.location);
-        tokio::spawn(async move {
+        Some(tokio::spawn(async move {
             let mut renderer = LiveRenderer::new(server_label);
             renderer.run(rx).await;
-        });
-    }
+        }))
+    } else {
+        None
+    };
 
     let probe_client = crate::network::build_client();
 
-    {
-        let mut s = state_tx.borrow().clone();
-        s.phase = Phase::Ping;
-        let _ = state_tx.send(s);
-    }
-
+    // Ping
+    send_phase(&state_tx, Phase::Ping);
     let ping = ping::measure_ping(&probe_client, server, cli.ping_count).await;
+    send_state(&state_tx, |s| s.ping = Some(ping.clone()));
 
-    {
-        let mut s = state_tx.borrow().clone();
-        s.ping = Some(ping.clone());
-        let _ = state_tx.send(s);
-    }
-
+    // Download
     let download_mbps = if !cli.no_download {
-        let (dl_tx, dl_rx) = watch::channel(SpeedProgress::default());
-
-        {
-            let mut s = state_tx.borrow().clone();
-            s.phase = Phase::Download;
-            let _ = state_tx.send(s);
-        }
-
-        // Forward download progress to main state.
-        {
-            let state_tx2 = state_tx.clone();
-            let mut rx2 = dl_rx.clone();
-            tokio::spawn(async move {
-                loop {
-                    if rx2.changed().await.is_err() {
-                        break;
-                    }
-                    let prog = rx2.borrow().clone();
-                    let mut s = state_tx2.borrow().clone();
-                    s.download = Some(prog);
-                    let _ = state_tx2.send(s);
-                }
-            });
-        }
-
+        let (dl_tx, _dl_rx) = watch::channel(SpeedProgress::default());
+        send_phase(&state_tx, Phase::Download);
+        forward_progress(&state_tx, _dl_rx, |s, p| s.download = Some(p));
         download::measure_download(&transfer_client, server, duration, cli.streams, dl_tx).await
     } else {
         0.0
     };
 
+    // Upload
     let upload_mbps = if !cli.no_upload {
-        let (ul_tx, ul_rx) = watch::channel(SpeedProgress::default());
-
-        {
-            let mut s = state_tx.borrow().clone();
-            s.phase = Phase::Upload;
-            let _ = state_tx.send(s);
-        }
-
-        {
-            let state_tx2 = state_tx.clone();
-            let mut rx2 = ul_rx.clone();
-            tokio::spawn(async move {
-                loop {
-                    if rx2.changed().await.is_err() {
-                        break;
-                    }
-                    let prog = rx2.borrow().clone();
-                    let mut s = state_tx2.borrow().clone();
-                    s.upload = Some(prog);
-                    let _ = state_tx2.send(s);
-                }
-            });
-        }
-
+        let (ul_tx, _ul_rx) = watch::channel(SpeedProgress::default());
+        send_phase(&state_tx, Phase::Upload);
+        forward_progress(&state_tx, _ul_rx, |s, p| s.upload = Some(p));
         upload::measure_upload(&transfer_client, server, duration, cli.streams, ul_tx).await
     } else {
         0.0
     };
 
-    {
-        let mut s = state_tx.borrow().clone();
-        s.phase = Phase::Done;
-        let _ = state_tx.send(s);
-    }
+    send_phase(&state_tx, Phase::Done);
 
-    // Give the renderer one final paint.
-    tokio::time::sleep(Duration::from_millis(150)).await;
+    // Aguarda o renderer terminar de verdade antes de continuar
+    if let Some(handle) = renderer_handle {
+        let _ = handle.await;
+    }
 
     TestResult {
         server_name: server.name.to_owned(),
         server_id: server.id.to_owned(),
-        ping: ping,
-        download_mbps: download_mbps,
-        upload_mbps: upload_mbps,
+        ping,
+        download_mbps,
+        upload_mbps,
         timestamp: Utc::now().to_rfc3339(),
     }
+}
+
+fn send_phase(tx: &watch::Sender<LiveState>, phase: Phase) {
+    let mut s = tx.borrow().clone();
+    s.phase = phase;
+    let _ = tx.send(s);
+}
+
+fn send_state(tx: &watch::Sender<LiveState>, f: impl FnOnce(&mut LiveState)) {
+    let mut s = tx.borrow().clone();
+    f(&mut s);
+    let _ = tx.send(s);
+}
+
+fn forward_progress(
+    state_tx: &watch::Sender<LiveState>,
+    mut rx: watch::Receiver<SpeedProgress>,
+    update: impl Fn(&mut LiveState, SpeedProgress) + Send + 'static,
+) {
+    let tx2 = state_tx.clone();
+    tokio::spawn(async move {
+        loop {
+            if rx.changed().await.is_err() {
+                break;
+            }
+            let prog = rx.borrow().clone();
+            let mut s = tx2.borrow().clone();
+            update(&mut s, prog);
+            let _ = tx2.send(s);
+        }
+    });
 }

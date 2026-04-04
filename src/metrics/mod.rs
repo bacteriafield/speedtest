@@ -9,12 +9,7 @@ pub struct CircularBuffer {
 
 impl CircularBuffer {
     pub fn new(capacity: usize) -> Self {
-        Self {
-            data: vec![0.0; capacity],
-            capacity,
-            head: 0,
-            len: 0,
-        }
+        Self { data: vec![0.0; capacity], capacity, head: 0, len: 0 }
     }
 
     pub fn push(&mut self, value: f64) {
@@ -30,14 +25,8 @@ impl CircularBuffer {
         if self.len == 0 {
             return vec![];
         }
-        let start = if self.len < self.capacity {
-            0
-        } else {
-            self.head
-        };
-        (0..self.len)
-            .map(|i| self.data[(start + i) % self.capacity])
-            .collect()
+        let start = if self.len < self.capacity { 0 } else { self.head };
+        (0..self.len).map(|i| self.data[(start + i) % self.capacity]).collect()
     }
 
     pub fn len(&self) -> usize {
@@ -74,13 +63,7 @@ impl Stats {
             0.0
         };
 
-        Self {
-            min,
-            max,
-            avg,
-            jitter,
-            samples: samples.len(),
-        }
+        Self { min, max, avg, jitter, samples: samples.len() }
     }
 }
 
