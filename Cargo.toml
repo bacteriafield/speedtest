@@ -5,7 +5,7 @@ edition = "2024"
 
 [[bin]]
 name = "speedtest"
-path = "src/main.rs"
+path = "speedtest/src/main.rs"
 
 [dependencies]
 tokio = { version = "1", features = ["full"] }
