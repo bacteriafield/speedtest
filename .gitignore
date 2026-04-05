@@ -1,2 +1,8 @@
 /target
-CNAME
+/node_modules
+homepage/.vitepress/cache
+homepage/.vitepress/dist
+node_modules
+dist
+.amp/
+.worktrees/
