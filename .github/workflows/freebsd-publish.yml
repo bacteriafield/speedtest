@@ -19,7 +19,7 @@ jobs:
           release: "14.2"
           usesh: true
           run: |
-            pkg install -y rust cargo
+            pkg install -y rust
             cargo build --release
 
             mkdir release
