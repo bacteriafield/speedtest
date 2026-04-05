@@ -1,6 +1,6 @@
 # Speedtest
 
-A morden cli speedtest tool, **zero dependency**, with graph integration and metrics export.
+Uma ferramenta moderna de teste de velocidade via linha de comando, sem dependências, com integração de gráficos e exportação de métricas.
 
 ### Quick install:
 ```bash
