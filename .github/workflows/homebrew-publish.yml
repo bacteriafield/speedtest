@@ -19,7 +19,7 @@ jobs:
         run: |
           TARBALL="https://github.com/bacteriafield/speedtest/archive/refs/tags/${{ github.event.release.tag_name }}.tar.gz"
           curl -sL "$TARBALL" -o source.tar.gz
-          SHA=$(sha256sum source.tar.gz | awk '{print $1}')
+          SHA=$(shasum -a 256 source.tar.gz | awk '{print $1}')
           echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
           echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
 
