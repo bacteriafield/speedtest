@@ -1,5 +1,22 @@
 #!/bin/sh
 
+set -e
+
+# 1. Fallback Priority Order
+#    If the native OS method (apt, dnf, pacman, brew) fails or is unavailable,
+#    the script will try these universal methods in the order listed below.
+#    Valid options: "nix" "cargo" "npm" "appimage"
+FALLBACK_PRIORITY="nix cargo npm appimage"
+
+# 2. Arch Linux: AUR Helper Priority
+#    The script will check for these helpers in order.
+AUR_HELPER_PRIORITY="yay paru"
+
+# 3. Cargo Configuration
+#    Set to 1 to prefer 'cargo-binstall' (pre-compiled binary, faster).
+#    Set to 0 to always force compilation from source.
+PREFER_CARGO_BINSTALL=1
+
 REPO_OWNER="bacteriafield"
 REPO_NAME="speedtest"
 BIN_NAME="speedtest-tool"
