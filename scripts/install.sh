@@ -19,7 +19,7 @@ PREFER_CARGO_BINSTALL=1
 
 REPO_OWNER="bacteriafield"
 REPO_NAME="speedtest"
-BIN_NAME="speedtest-tool"
+BIN_NAME="speedtest"
 
 # --- Colors and Helpers ---
 RED='\033[0;31m'
