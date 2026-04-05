@@ -1,0 +1,72 @@
+/* ─────────────────────────────────────────
+   speedtest — VitePress theme override
+   Resets VitePress defaults completely for
+   full-custom landing page experience.
+───────────────────────────────────────── */
+
+:root {
+  --bg: #0d0d0d;
+  --bg2: #111111;
+  --bg3: #161616;
+  --card: #141414;
+  --border: #242424;
+  --border2: #2e2e2e;
+  --text: #e8e8e8;
+  --muted: #666666;
+  --muted2: #888888;
+  --orange: #f97316;
+  --orange-dim: rgba(249, 115, 22, 0.12);
+  --orange-glow: rgba(249, 115, 22, 0.35);
+  --green: #22c55e;
+  --blue: #60a5fa;
+  --yellow: #fbbf24;
+  --mono: 'JetBrains Mono', 'Space Mono', 'Cascadia Code', Consolas, monospace;
+  --radius: 6px;
+  --nav-h: 62px;
+
+  /* Override VitePress vars */
+  --vp-c-brand-1: #f97316;
+  --vp-c-brand-2: #f97316;
+  --vp-font-family-base: var(--mono);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg) !important;
+  color: var(--text) !important;
+  font-family: var(--mono) !important;
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* Hide VitePress default layout chrome */
+.VPNav,
+.VPLocalNav,
+.VPSidebar,
+.VPFooter,
+#VPContent {
+  display: none !important;
+}
+
+a { color: var(--orange); text-decoration: none; transition: color .2s; }
+a:hover { color: var(--text); }
+
+code {
+  font-family: var(--mono);
+  color: var(--orange);
+  background: rgba(249,115,22,.08);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: .9em;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
