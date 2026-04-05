@@ -1,6 +1,6 @@
 # Speedtest
 
-Uma ferramenta moderna de teste de velocidade via linha de comando, sem dependências, com integração de gráficos e exportação de métricas.
+A modern cli speedtest tool, zero dependency, with graph integration and metrics export.
 
 ### Quick install:
 ```bash
