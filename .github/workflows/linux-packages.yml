@@ -31,22 +31,20 @@ jobs:
         run: cargo generate-rpm
 
       - name: Push .deb to Packagecloud
-        uses: danielmundi/upload-packagecloud@v1
-        with:
-          PACKAGE-NAME: target/debian/*.deb
-          PACKAGECLOUD-USERNAME: bacteriafield
-          PACKAGECLOUD-REPO: speedtest
-          PACKAGECLOUD-DISTRO: ubuntu/jammy  # ou debian/bookworm
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+        run: |
+          gem install package_cloud
+          DEB=$(ls target/debian/*.deb | head -n1)
+          package_cloud push bacteriafield/speedtest/any/any "$DEB"
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
       - name: Push .rpm to Packagecloud
-        uses: danielmundi/upload-packagecloud@v1
-        with:
-          PACKAGE-NAME: target/generate-rpm/*.rpm
-          PACKAGECLOUD-USERNAME: bacteriafield
-          PACKAGECLOUD-REPO: speedtest
-          PACKAGECLOUD-DISTRO: fedora/40
-          PACKAGECLOUD-TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+        run: |
+          gem install package_cloud
+          RPM=$(ls target/generate-rpm/*.rpm | head -n1)
+          package_cloud push bacteriafield/speedtest/rpm_any/rpm_any "$RPM"
+        env:
+          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
