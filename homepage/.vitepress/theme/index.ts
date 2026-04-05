@@ -1,6 +1,6 @@
 import { h } from 'vue'
 import type { Theme } from 'vitepress'
-import HomeLayout from './Layout.vue'
+import HomeLayout from './HomeLayout.vue'
 import './style.css'
 
 export default {
