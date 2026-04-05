@@ -32,7 +32,7 @@ jobs:
 
       - name: Push .deb to Packagecloud
         run: |
-          gem install package_cloud
+          sudo gem install package_cloud
           DEB=$(ls target/debian/*.deb | head -n1)
           package_cloud push bacteriafield/speedtest/any/any "$DEB"
         env:
@@ -40,7 +40,7 @@ jobs:
 
       - name: Push .rpm to Packagecloud
         run: |
-          gem install package_cloud
+          sudo gem install package_cloud
           RPM=$(ls target/generate-rpm/*.rpm | head -n1)
           package_cloud push bacteriafield/speedtest/rpm_any/rpm_any "$RPM"
         env:
