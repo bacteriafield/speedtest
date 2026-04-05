@@ -4,5 +4,6 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   base: '/speedtest/',
   title: "Speedtest",
-  description: "A morden cli speedtest tool, zero dependency, with graph integration and metrics export."
+  description: "A morden cli speedtest tool, zero dependency, with graph integration and metrics export.",
+  themeConfig: {}
 })
