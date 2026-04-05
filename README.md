@@ -4,7 +4,7 @@ A morden cli speedtest tool, **zero dependency**, with graph integration and met
 
 ### Quick install:
 ```bash
-curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/master/scripts/install.sh | sh
+curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/main/scripts/install.sh | sh
 ```
 ---
 ### Demo
@@ -13,7 +13,7 @@ curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/master
 ---
 ### Installation
 Quick install (autodetect best method):
-`curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/master/scripts/install.sh | sh`
+`curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/main/scripts/install.sh | sh`
 
 Or, pick your preference:
 

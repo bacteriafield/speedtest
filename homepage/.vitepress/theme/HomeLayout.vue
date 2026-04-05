@@ -82,7 +82,7 @@
             @click="copyCmd"
           >
             <span class="cmd-prefix">$</span>
-            <code>{{ cmdCopied ? 'Copied!' : 'curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/master/scripts/install.sh | sh' }}</code>
+            <code>{{ cmdCopied ? 'Copied!' : 'curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/main/scripts/install.sh | sh' }}</code>
             <div class="copy-toast" :class="{ show: cmdCopied }">Copied!</div>
           </div>
           <a
@@ -248,7 +248,7 @@ const menuOpen   = ref(false)
 
 // ─── Copy command ───
 const cmdCopied = ref(false)
-const fullCmd   = 'curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/master/scripts/install.sh | sh'
+const fullCmd   = 'curl https://raw.githubusercontent.com/bacteriafield/speedtest/refs/heads/main/scripts/install.sh | sh'
 
 async function copyCmd() {
   try {
