@@ -21,17 +21,13 @@ Or, pick your preference:
 |----------|--------|
 | macOS | [brew](#brew) |
 | Bazzite/Bluefin/Aurora Linux | [brew](#brew) |
-| Windows | [winget](#windows-winget) |
-| Arch Linux | [AUR](#arch-linux-aur) |
 | Debian/Ubuntu | [.deb](#debianubuntu-deb) |
 | Fedora/RHEL | [.rpm](#fedorarhelopensuse-rpm), [Terra](https://terra.fyralabs.com/) |
 | FreeBSD | [ports / pkg](https://www.speedtestports.org/editors/speedtest) |
 | Linux (any distro) | [AppImage](#appimage), [Flatpak](#flatpak) |
 | All platforms | [Pre-built binaries](#pre-built-binaries) |
-| npm | [npm / npx](#npm) |
 | Rust users (Fast) | [cargo-binstall](#using-cargo-binstall) |
 | Rust users | [crates.io](#from-cratesio) |
-| Nix | [Nix flakes](#nix-flakes) |
 | Developers | [From source](#from-source) |
 
 ### Brew
@@ -43,42 +39,6 @@ On macOS and some linux distros (Bazzite/Bluefin/Aurora):
 ```bash
 brew tap bacteriafield/speedtest
 brew install speedtest-tool
-```
-
-### Windows (winget)
-
-```bash
-winget install speedtest-tool
-```
-
-Alternatively, Windows users can use [npm](#npm).
-
-### Arch Linux ([AUR](https://aur.archlinux.org/packages/speedtest-tool-bin))
-
-**Binary package (recommended, faster install):**
-
-```bash
-git clone https://aur.archlinux.org/speedtest-tool-bin.git
-cd speedtest-tool-bin
-makepkg --syncdeps --install
-```
-
-**Build from source:**
-
-```bash
-git clone https://aur.archlinux.org/speedtest-tool.git
-cd speedtest-tool
-makepkg --syncdeps --install
-```
-
-**Using an AUR helper (such as `yay` or `paru`):**
-
-```bash
-# Binary package (recommended, faster install)
-yay -S speedtest-tool-bin
-
-# Or build from source
-yay -S speedtest-tool
 ```
 
 ### Debian/Ubuntu (.deb)
@@ -110,44 +70,6 @@ chmod +x speedtest-tool-VERSION-x86_64.AppImage
 ./speedtest-tool-VERSION-x86_64.AppImage
 ```
 
-**For faster startup** (recommended): Extract the AppImage instead of running it directly. This avoids the FUSE mount overhead on each launch (~10x faster):
-
-```bash
-./speedtest-tool-VERSION-x86_64.AppImage --appimage-extract
-mkdir -p ~/.local/share/speedtest-tool ~/.local/bin
-mv squashfs-root/* ~/.local/share/speedtest-tool/
-ln -sf ~/.local/share/speedtest-tool/usr/bin/speedtest ~/.local/bin/speedtest
-```
-
-Ensure `~/.local/bin` is in your PATH. Available for x86_64 and aarch64 architectures.
-
-### Flatpak
-
-Download the `.flatpak` bundle from the [releases page](https://github.com/bacteriafield/speedtest/releases) and install:
-
-```bash
-flatpak install --user speedtest-tool-VERSION-x86_64.flatpak
-flatpak run io.github.sinelaw.speedtest
-```
-
-See [flatpak/README.md](flatpak/README.md) for building from source.
-
-### Pre-built binaries
-
-Download the latest release for your platform from the [releases page](https://github.com/bacteriafield/speedtest/releases).
-
-### npm
-
-```bash
-npm install -g @speedtest-tool/speedtest-tool
-```
-
-Or try it without installing:
-
-```bash
-npx @speedtest-tool/speedtest-tool
-```
-
 ### Using cargo-binstall
 
 To install the binary directly without compiling (much faster than crates.io):
@@ -162,18 +84,6 @@ Then install speedtest
 
 ```bash
 cargo binstall speedtest-tool
-```
-
-### Nix flakes
-
-Run without installing:
-```bash
-nix run github:bacteriafield/speedtest
-```
-
-Or install to your profile:
-```bash
-nix profile add github:bacteriafield/speedtest
 ```
 
 ### From crates.io
