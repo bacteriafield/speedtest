@@ -32,21 +32,21 @@ jobs:
       - name: Build .rpm
         run: cargo generate-rpm
 
-      - name: Push .deb to Packagecloud
-        run: |
-          sudo gem install package_cloud
-          DEB=$(ls target/debian/*.deb | head -n1)
-          package_cloud push bacteriafield/speedtest/any/any "$DEB"
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+      # - name: Push .deb to Packagecloud
+      #   run: |
+      #     sudo gem install package_cloud
+      #     DEB=$(ls target/debian/*.deb | head -n1)
+      #     package_cloud push bacteriafield/speedtest/any/any "$DEB"
+      #   env:
+      #     PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
-      - name: Push .rpm to Packagecloud
-        run: |
-          sudo gem install package_cloud
-          RPM=$(ls target/generate-rpm/*.rpm | head -n1)
-          package_cloud push bacteriafield/speedtest/rpm_any/rpm_any "$RPM"
-        env:
-          PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
+      # - name: Push .rpm to Packagecloud
+      #   run: |
+      #     sudo gem install package_cloud
+      #     RPM=$(ls target/generate-rpm/*.rpm | head -n1)
+      #     package_cloud push bacteriafield/speedtest/rpm_any/rpm_any "$RPM"
+      #   env:
+      #     PACKAGECLOUD_TOKEN: ${{ secrets.PACKAGECLOUD_TOKEN }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
