@@ -1,9 +1,8 @@
 name: Publish Homebrew Formula
-
 on:
-  release:
-    types: [published]
-
+  push:
+    tags:
+      - 'v*'
 jobs:
   homebrew:
     runs-on: macos-latest
@@ -17,7 +16,7 @@ jobs:
       - name: Download release tarball and compute SHA
         id: sha
         run: |
-          TARBALL="https://github.com/bacteriafield/speedtest/archive/refs/tags/${{ github.event.release.tag_name }}.tar.gz"
+          TARBALL="https://github.com/bacteriafield/speedtest/archive/refs/tags/${{ github.ref_name }}.tar.gz"
           curl -sL "$TARBALL" -o source.tar.gz
           SHA=$(shasum -a 256 source.tar.gz | awk '{print $1}')
           echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
@@ -32,13 +31,10 @@ jobs:
             url "${{ steps.sha.outputs.tarball }}"
             sha256 "${{ steps.sha.outputs.sha256 }}"
             license "MIT"
-
             depends_on "rust" => :build
-
             def install
               system "cargo", "install", *std_cargo_args
             end
-
             test do
               assert_match "speedtest", shell_output("#{bin}/speedtest --help")
             end
@@ -50,5 +46,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add Formula/speedtest.rb
-          git commit -m "Update formula to ${{ github.event.release.tag_name }}" || echo "No changes"
+          git commit -m "Update formula to ${{ github.ref_name }}" || echo "No changes"
           git push
