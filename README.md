@@ -37,7 +37,7 @@ On macOS and some linux distros (Bazzite/Bluefin/Aurora):
 > **Note:** On macOS, see [macOS Terminal Tips](https://getspeedtest.dev/docs/configuration/keyboard#macos-terminal-tips) for recommended terminal configuration.
 
 ```bash
-brew tap bacteriafield/speedtest
+brew trust bacteriafield/speedtest
 brew install speedtest-tool
 ```
 
